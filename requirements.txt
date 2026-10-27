@@ -1,0 +1,9 @@
+streamlit>=1.30
+numpy
+pandas
+scikit-image
+scipy
+scikit-learn
+matplotlib
+imageio
+tifffile
