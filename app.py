@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from organoscope import analyze_array
 
 # ---- edit to put your own name on it ----
-AUTHOR = "Enguun Erdenesugar"
+AUTHOR = "银姑 Yingu"
 INSTITUTION = "Tsinghua University"
 
 # ---- palette ----
@@ -65,6 +65,13 @@ html, body, [class*="css"], .stMarkdown, p, div, span, label {{ font-family:'Lib
 .stDownloadButton>button:hover, .stButton>button:hover {{ background:{GOLD}; }}
 .stDownloadButton>button:hover p, .stButton>button:hover p {{ color:{NAVY}!important; }}
 [data-testid="stSidebar"] {{ background:{PANEL}; border-right:1px solid {RULE}; }}
+/* the chart zoom / fullscreen button */
+[data-testid="stElementToolbar"] {{ background:transparent; }}
+[data-testid="stElementToolbarButton"], [data-testid="StyledFullScreenButton"],
+[data-testid="stElementToolbar"] button {{ color:{NAVY}!important; background:{PANEL}!important;
+  border:1px solid {RULE}!important; border-radius:3px; }}
+[data-testid="stElementToolbarButton"]:hover, [data-testid="StyledFullScreenButton"]:hover,
+[data-testid="stElementToolbar"] button:hover {{ color:{GOLD}!important; }}
 .foot {{ color:{MUTED}; font-size:.78rem; margin-top:34px; border-top:1px solid {RULE}; padding-top:12px; }}
 </style>
 """, unsafe_allow_html=True)
@@ -105,6 +112,9 @@ with st.sidebar:
     up = st.file_uploader("Load image", type=["tif", "tiff", "png", "jpg", "jpeg"])
     st.markdown("<div class='note'>Fluorescence (green = live, red = dead) works best. "
                 "A sample loads if nothing is uploaded.</div>", unsafe_allow_html=True)
+    sep = st.slider("Organoid separation", 10, 35, 18,
+                    help="Lower separates touching organoids more aggressively; "
+                         "raise it if single organoids get split in two.")
     st.markdown("<div class='note' style='margin-top:14px;color:#6B7685'>Live/dead from a merged RGB "
                 "image is approximate. Research prototype, not a clinical tool.</div>", unsafe_allow_html=True)
 
@@ -117,7 +127,7 @@ else:
         st.stop()
     img, name = imread(sample), "sample"
 
-df, labels = analyze_array(img, source=name)
+df, labels = analyze_array(img, source=name, split_min_distance=sep)
 if len(df) == 0:
     st.markdown("<div class='note'>No organoids detected — try a clearer fluorescence image.</div>", unsafe_allow_html=True)
     st.stop()
