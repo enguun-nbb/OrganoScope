@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from organoscope import analyze_array
 
 # ---- edit to put your own name on it ----
-AUTHOR = "银姑 Yingu"
+AUTHOR = "Enguun Erdenesugar"
 INSTITUTION = "Tsinghua University"
 
 # ---- palette ----
