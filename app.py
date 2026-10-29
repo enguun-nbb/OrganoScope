@@ -60,6 +60,12 @@ html, body, [class*="css"], .stMarkdown, p, div, span, label {{ font-family:'Lib
 .stDownloadButton>button:hover, .stButton>button:hover {{ background:{GOLD}; }}
 .stDownloadButton>button:hover p, .stButton>button:hover p {{ color:{NAVY}!important; }}
 [data-testid="stSidebar"] {{ background:{PANEL}; border-right:1px solid {RULE}; }}
+/* file-uploader: keep it on-theme and readable (cream dropzone, navy button) */
+[data-testid="stFileUploaderDropzone"] {{ background:{CREAM}!important; border:1px dashed {RULE}!important; }}
+[data-testid="stFileUploaderDropzone"] span, [data-testid="stFileUploaderDropzone"] small {{ color:{INK}!important; }}
+[data-testid="stFileUploaderDropzone"] button {{ background:{NAVY}!important; border:none!important; }}
+[data-testid="stFileUploaderDropzone"] button p, [data-testid="stFileUploaderDropzone"] button div,
+[data-testid="stFileUploaderDropzone"] button span {{ color:{CREAM}!important; }}
 [data-testid="stElementToolbar"] {{ background:transparent; }}
 [data-testid="stElementToolbarButton"], [data-testid="StyledFullScreenButton"], [data-testid="stElementToolbar"] button {{
   color:{NAVY}!important; background:{PANEL}!important; border:1px solid {RULE}!important; border-radius:3px; }}
@@ -69,7 +75,7 @@ html, body, [class*="css"], .stMarkdown, p, div, span, label {{ font-family:'Lib
 """, unsafe_allow_html=True)
 
 st.markdown(f"""
-<div class="wordmark">organoscope</div>
+<div class="wordmark">Organoscope</div>
 <div class="tagline">per-organoid read-out of the whole field</div>
 <div class="goldline"></div>
 <div class="blurb">Every organoid in a microscopy field, measured on its own — live/dead and
