@@ -1,71 +1,108 @@
 # OrganoScope
 
-**Per-organoid analysis of tumor–immune co-culture microscopy.**
-A computer-vision tool that measures *each organoid individually* — size, shape,
-and live/dead — instead of collapsing a whole image into one average number, and
-flags organoids whose response is unusual (e.g. candidate treatment-resistant clones).
+**Per-organoid analysis of organoid microscopy images.**
+
+OrganoScope finds every organoid in a microscopy field and measures each one separately
+(size, shape and live/dead fraction) instead of reducing the whole image to a single
+average.
+
+**Live demo:** [organoscope.streamlit.app](https://organoscope.streamlit.app/)
+
+![OrganoScope per-organoid map](docs/screenshot.png)
 
 ---
 
 ## Why
 
-In patient-derived lung-cancer organoid + PBMC co-culture assays (the GLI / InSMAR-chip
-platform), immune killing is typically read out with Calcein-AM/PI live-dead staining and
-summarized as **one Response index (Ri) per imaging field**. That field average hides the
-biology that matters: within a single field, organoids can range from ~50% to ~86% live.
-A resistant organoid sitting in a field that mostly died is exactly the cell that drives
-relapse — and the field average erases it.
-
-**OrganoScope measures every organoid separately, then discovers response patterns and
-flags the outliers — with no manual labels.**
+Tumor–immune co-culture assays are often read out with live/dead fluorescence staining
+and summarized as one response value per imaging field. A field average can hide
+organoids that respond very differently from their neighbours, such as a surviving
+organoid in a field where most were killed. Measuring each organoid separately keeps
+that variation visible.
 
 ---
 
-## Scope — what this project *is* (and is not)
+## What it does
 
-This is deliberately scoped so it can actually be finished and defended.
+**Single field**
+- Segments each organoid in a fluorescence (or brightfield) image
+- Splits touching organoids with a distance-transform watershed (adjustable in the sidebar)
+- Measures per-organoid area, equivalent diameter, circularity, solidity, eccentricity
+  and live % (green vs. red signal)
+- Shows a labelled per-organoid map, the field mean, the field response index
+  (Ri = 1 − mean live fraction) and the live % range
+- Exports the per-organoid table as CSV
 
-**V1 — Per-organoid response profiling (the build).**
-- Input: any organoid microscopy field (brightfield *or* two-channel fluorescence).
-- Segment each organoid; measure per-organoid morphology (area, circularity, solidity,
-  edge roughness) and, for fluorescence, live/dead fraction.
-- Validation: per-group averages should reproduce the lab's published Ri ranking.
-- Unsupervised: group organoids into response phenotypes; flag anomalies (resistant outliers).
-- A web app to upload an image and see the per-organoid result.
-
-**Future work (vision, NOT part of V1 — honest about data we don't yet have):**
-- *V2 — Immune context:* per-organoid density of surrounding PBMCs (needs cleaner images).
-- *V3 — Response trajectories:* multi-timepoint tracking (needs time-lapse data; our TIC
-  data is single-endpoint, so this is developed on a public time-lapse first).
-- *Parked — genomics / multimodal / "digital twin":* predicting molecular subtype from
-  morphology, drug-response prediction, patient digital profiles. These need paired
-  imaging + genomic data we do not have. Interesting; not buildable now.
+**Compare groups**
+- Analyses several images at once, one treatment condition per image
+- Reads the group from the filename (`CTRL_a.png`, `g1_a.png`, ...), editable in the app
+- Plots per-organoid viability by group and tests for differences
+  (Mann–Whitney for 2 groups, Kruskal–Wallis for 3+)
+- Exports a group summary and all per-organoid data as CSV
 
 ---
 
-## Data
-
-- **Public (development & validation):** OrganoID 12-hour brightfield time-lapse (tracked,
-  CC-licensed). Gives volume and a time-series.
-- **Own research data (showcase):** one+ fluorescence fields from a lung-cancer organoid +
-  PBMC co-culture (Calcein-AM/PI). *Limitation, stated honestly:* these are merged,
-  brightness-adjusted composites, not raw channels — so live/dead separation is approximate.
-  Single patient, single timepoint. This is a proof of concept, not a clinical claim.
-
----
-
-## Pipeline
+## How it works
 
 ```
-image → split channels → threshold (find cells) → label & split touching organoids
-      → per-organoid features → live/dead + phenotype → anomaly flag → report / web
+image → remove scale bar / overlays → threshold signal (Otsu) → clean mask
+      → split touching organoids (watershed) → per-organoid features → map, stats, CSV
 ```
+
+The analysis engine is in `organoscope.py`. The web app is in `app.py`.
+
+---
+
+## Run locally
+
+```bash
+git clone https://github.com/enguun-nbb/OrganoScope.git
+cd OrganoScope
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+---
+
+## Limitations
+
+- Live % is calculated from the green and red channels of an RGB image. On merged or
+  brightness-adjusted images it is an approximation, not a calibrated viability measure.
+- The colour grades in the app (≥78% alive, 60–78% partial, <60% responding) are for
+  display only and have not been validated as biological cut-offs.
+- Segmentation is tuned for fluorescence organoid images and may need adjustment for
+  other imaging setups.
+- This is a research prototype, not a clinical tool.
+
+---
+
+## Planned
+
+- Unsupervised grouping of organoids into response phenotypes
+- Automatic flagging of outlier (possibly treatment-resistant) organoids
+- Validation of per-organoid results against manually scored images
+- Immune context: density of immune cells around each organoid
+- Response trajectories from time-lapse imaging
+
+---
 
 ## Tech
 
-Python · scikit-image · scipy · numpy · pandas · matplotlib. Web demo: self-contained HTML.
+Python · scikit-image · SciPy · NumPy · pandas · Matplotlib · Streamlit
 
-## Status
+---
 
-🟢 Engine prototype working on real images · 🟡 Rebuilding from scratch, step by step, for
-full understanding · ⚪ Web app: preview built, live version pending engine completion.
+## Author
+
+**Enguun Erdenesugar (银姑)**, Biomedical Engineering, Tsinghua University
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+    Loads an image file and returns the per-organoid DataFrame.
+
+Notes
+-----
+Live % is the green signal as a share of green + red signal within each
+organoid. On merged or brightness-adjusted RGB images it is an approximation.
+"""
