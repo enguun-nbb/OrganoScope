@@ -1,9 +1,28 @@
 """
-organoscope.py — the reusable engine (Steps 1-6 folded into functions).
+OrganoScope analysis engine.
 
-    analyze_image(path)  ->  DataFrame, one row per organoid.
+Segments organoids in a microscopy image and measures each one separately.
 
-This is the tidy version of everything we built script by script.
+Main functions
+--------------
+segment(img, ...)
+    Finds organoids and returns a label image plus the green and red channels.
+    Removes the scale bar and overlays using the blue channel, thresholds the
+    signal with Otsu's method, and splits touching organoids with a
+    distance-transform watershed.
+
+analyze_array(img, source="upload", split_min_distance=18)
+    Analyses an image already loaded in memory. Returns (DataFrame, labels):
+    one row per organoid, with area, diameter, circularity, solidity,
+    eccentricity, centroid and live %, plus the label image for drawing overlays.
+
+analyze_image(path, source=None)
+    Loads an image file and returns the per-organoid DataFrame.
+
+Notes
+-----
+Live % is the green signal as a share of green + red signal within each
+organoid. On merged or brightness-adjusted RGB images it is an approximation.
 """
 import numpy as np
 import pandas as pd
