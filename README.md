@@ -8,8 +8,6 @@ average.
 
 **Live demo:** [organoscope.streamlit.app](https://organoscope.streamlit.app/)
 
-![OrganoScope per-organoid map](docs/screenshot.png)
-
 ---
 
 ## Why
@@ -94,15 +92,8 @@ Python · scikit-image · SciPy · NumPy · pandas · Matplotlib · Streamlit
 
 ## Author
 
-**Enguun Erdenesugar (银姑)**, Biomedical Engineering, Tsinghua University
+**Enguun Erdenesugar**, Biomedical Engineering, Tsinghua University
 
 ## License
 
 MIT. See [LICENSE](LICENSE).
-    Loads an image file and returns the per-organoid DataFrame.
-
-Notes
------
-Live % is the green signal as a share of green + red signal within each
-organoid. On merged or brightness-adjusted RGB images it is an approximation.
-"""
