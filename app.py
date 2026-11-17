@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 from organoscope import analyze_array
 
-AUTHOR = "银姑 Yingu"
+AUTHOR = "Enguun Erdenesugar (银姑)"
 INSTITUTION = "Tsinghua University"
 
 # ---- palette (dark) ----
@@ -27,7 +27,8 @@ LIVE, DEAD, PARTIAL = "#3DE07E", "#FF5247", "#F3B23E"
 GRADE = [(78, LIVE, "alive / resistant"), (60, PARTIAL, "partial"), (0, DEAD, "responding / killed")]
 
 
-st.set_page_config(page_title="OrganoScope", page_icon="◆", layout="wide")
+st.set_page_config(page_title="OrganoScope", page_icon="◆", layout="wide",
+                   initial_sidebar_state="expanded")
 
 st.markdown(f"""
 <style>
@@ -36,6 +37,10 @@ html, body, [class*="css"], .stMarkdown, p, div, span, label, input, button {{
   font-family:'Switzer',system-ui,-apple-system,Arial,sans-serif; color:{FG}; }}
 .stApp {{ background:{BG}; }}
 #MainMenu, footer, header {{ visibility:hidden; }}
+header {{ background:transparent!important; }}
+/* keep the open-sidebar arrow visible after the sidebar is collapsed */
+[data-testid="stSidebarCollapsedControl"], [data-testid="stExpandSidebarButton"],
+[data-testid="stSidebarCollapsedControl"] *, [data-testid="stExpandSidebarButton"] * {{ visibility:visible!important; color:{FG}!important; }}
 .block-container {{ padding-top:0; max-width:1120px; }}
 
 /* ---- glow hero ---- */
